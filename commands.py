@@ -114,15 +114,15 @@ def start ():
         for i in range(len(data)):
             byte.append('0x'+ binascii.hexlify(data[i])) 
         if byte[5] == '0x00':
-            return 'Production has started'
+            return {'Status':status()['Status'],'Response':'Starting'}
         elif byte[5] == '0x01':
-            return 'Production cant be started'
+            return {'Status':status()['Status'],'Response':'Production cant be started'}
         else:
-            return 'error in comminication'
+            return {'Status':status()['Status'],'Response':'error in comminication'}
     elif state['Status'] == 'Unknown':
-        return 'Machine Status Unknown. Cannot START'
+        return {'Status':status()['Status'],'Response':'Printer in Unknown State'}
     else:
-        return 'Machine already running'
+        return {'Status':status()['Status'],'Response':'Printer already started'}
     
 #Stop message for printer
 def stop (): 
@@ -136,13 +136,13 @@ def stop ():
         for i in range(len(data)):
             bytes.append('0x'+ binascii.hexlify(data[i])) 
         if bytes[5] == '0x00':
-            return 'Production is Stopping'
+            return {'Status':status()['Status'],'Response':'Stopping'}
         elif bytes == '0x01':
-            return 'Production cant be stopped'
+            return {'Status':status()['Status'],'Response':'Production cant be stopped'}
         else:
-            return 'error in comminication'
+            return {'Status':status()['Status'],'Response':'error in comminication'}
     else:
-        return 'Machine already Stopped'
+        return {'Status':status()['Status'],'Response':'Printer already stopped'}
     
 #This command is sent on port 1. It is used to get the jobs that are available on the controller.
 def getJobs (): 
@@ -168,8 +168,14 @@ def getJobs ():
 def loadJob (job): 
     hexJob = toHex(job)
     rtnMessage = b'\x22\x01\x00\x00\x00\x00'
-    str = b"\\x22\\x0a\\x00\\x00\\x00"
-    message3 = str+hexJob
+    message = b"\\x00\\x00\\x00"
+    
+    jobLength = b''
+    if len(hex(len(job)).replace('0x',b'\\x'))==3:
+        jobLength =hex(len(job)).replace('0x','\\x22\\x0')
+    else:
+        jobLength = hex(id).replace('0x','\\x22\\x')
+    message3 = jobLength+message+hexJob
     message2 = message3.decode('unicode-escape').encode('ISO-8859-1')
     state = status()
     if state['Status'] == 'Stopped'or state['Status'] == 'Unknown' :
@@ -180,9 +186,9 @@ def loadJob (job):
         for i in range(len(data)):
             byte.append('0x'+ binascii.hexlify(data[i])) 
         if byte[5] == '0x00':
-            return 'Job has been loaded'
+            return job + ' has been loaded'
         elif byte == '0x01':
-            return 'Job could not be loaded'
+            return job + ' could not be loaded'
         else:
             return 'error in comminication'
     else:
