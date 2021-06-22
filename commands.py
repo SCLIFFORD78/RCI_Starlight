@@ -55,31 +55,31 @@ def config ():
         return "configuration OK"
     else:
         return "Configuration error"
-    
 def connect(host, port):
-    message = ""
+    message = False
     conn = False
     try:
         connection = sock.getsockname()
         print(connection[0])
-        message =  "Connected on " + connection[0]
+        message =  True
         conn = True
         
     except socket.error :
-        message = "Connecting"
+        message = False
     if not conn:
         try:
             sock.connect((host, port))
             test = sock.getsockname()
             print (sys.stderr, 'connecting to %s' % host)
             
-            message =  "Connected on " + test[0]
+            message =  True
         except socket.error:
-            message ="Error in connection"
+            message = False
         try:
             config()
         except socket.error:
-            message = message + ". Configuration error"
+            print( ". Configuration error")
+            message = False
     return message
 # Gets status of the printer
 def status (): 
@@ -149,6 +149,7 @@ def getJobs ():
     message = b'\x23\x00\x00\x00\x00'
     sock.sendall(message,0)
     data = messageRecieved(message)
+    print (data)
     if(len(data)>4):
         jobs = []
         job=""

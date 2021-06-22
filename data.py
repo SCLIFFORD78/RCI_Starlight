@@ -48,10 +48,8 @@ def getFifo ():
     byte = []
     for i in range(len(data)):
         byte.append('0x'+ binascii.hexlify(data[i]))
-    for item in range(1,4):
-         if int(byte[item],16) > 0: 
-             fifo = int(byte[item+4],16)
-             break
+
+    fifo = int(byte[5],16)
     return fifo
 
 #This command is sent on port 2. This command is used to send data. 
@@ -121,24 +119,31 @@ def sendDataRecord (dataRecord,id):
  
     
 def connect(host, port):
-    message = ""
+    message = False
     try:
         connection = sock.getsockname()
         print(connection[0])
-        message =  "Connected on " + connection[0]
+        message =  True
         
     except socket.error :
-        message = "Connecting"
+        message = False
     try:
         sock.connect((host, port))
         test = sock.getsockname()
         print (sys.stderr, 'connecting to %s' % host)
 
-        message =  "Connected on " + test[0]
+        message =  True
     except socket.error:
-        message ="Error in connection"
+        message = False
     return message
         
-        
-
+def inMessage (): 
+    if sock.recv(4096):      
+        data = sock.recv(4096)
+        amount_expected = len(data)
+        amount_received = 0
+        while amount_received < amount_expected:
+                data = sock.recv(4096)
+                amount_received += len(data)
+        return (sys.stderr, 'received %s' % data)
 
