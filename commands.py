@@ -144,6 +144,26 @@ def stop ():
     else:
         return {'Status':status()['Status'],'Response':'Printer already stopped'}
     
+#This command is sent on port 1. This command is sent to confirm the number of variable data points expected for a specific job.
+def queryJob (job): 
+    hexJob = toHex(job)
+    rtnMessage = b'\x22\x01\x00\x00\x00\x00'
+    message = b"\\x00\\x00\\x00"
+    jobLength = b''
+    if len(hex(len(job)).replace('0x',b'\\x'))==3:
+        jobLength =hex(len(job)).replace('0x','\\x26\\x0')
+    else:
+        jobLength = hex(id).replace('0x','\\x26\\x')
+    message2 = jobLength+message+hexJob
+    message3 = message2.decode('unicode-escape').encode('ISO-8859-1')
+    
+
+    sock.sendall(message3,0)
+    
+    data = messageRecieved(message)
+        
+    
+    
 #This command is sent on port 1. It is used to get the jobs that are available on the controller.
 def getJobs (): 
     message = b'\x23\x00\x00\x00\x00'

@@ -136,14 +136,4 @@ def connect(host, port):
     except socket.error:
         message = False
     return message
-        
-def inMessage (): 
-    if sock.recv(4096):      
-        data = sock.recv(4096)
-        amount_expected = len(data)
-        amount_received = 0
-        while amount_received < amount_expected:
-                data = sock.recv(4096)
-                amount_received += len(data)
-        return (sys.stderr, 'received %s' % data)
 

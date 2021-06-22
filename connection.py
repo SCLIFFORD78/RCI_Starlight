@@ -30,6 +30,7 @@ while True:
     print (commands.stop())
     #print (commands.status())
     print (commands.getJobs())
+    print (commands.queryJob('OemSimulatorJob'))
     print(commands.loadJob('OemSimulatorJob'))
     #print(data.connect('localhost',10072))
     #print(data.getFifo())
