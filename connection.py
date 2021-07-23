@@ -1,7 +1,7 @@
 import socket
 import sys
-import commands
-import data
+import RCIcommands
+import RCIdata
 
 # Create a TCP/IP socket
 #sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -15,26 +15,26 @@ import data
 while True:
 
 
-    print(commands.connect('localhost', 10071))
-    print (commands.host)
-    status = commands.status()
+    print(RCIcommands.connect('localhost', 10071))
+    print (RCIcommands.host)
+    status = RCIcommands.status()
     print (status)
-    #print (commands.disconnect())
-    #print(commands.connect('localhost', 10071))
-    start = commands.start()
+    #print (RCIcommands.disconnect())
+    #print(RCIcommands.connect('localhost', 10071))
+    start = RCIcommands.start()
     print (start)
-    #print (commands.status())
-    #start = commands.start()
+    #print (RCIcommands.status())
+    #start = RCIcommands.start()
     #print (start)
-    #print (commands.status())
-    print (commands.stop())
-    #print (commands.status())
-    print (commands.getJobs())
-    print (commands.queryJob('OemSimulatorJob'))
-    print(commands.loadJob('OemSimulatorJob'))
-    #print(data.connect('localhost',10072))
-    #print(data.getFifo())
-    #print(data.sendDataRecord('blank.bmp,,,,',44))
+    #print (RCIcommands.status())
+    print (RCIcommands.stop())
+    #print (RCIcommands.status())
+    print (RCIcommands.getJobs())
+    #print (RCIcommands.queryJob('OemSimulatorJob'))
+    print(RCIcommands.loadJob('OemSimulatorJob'))
+    #print(RCIdata.connect('localhost',10072))
+    #print(RCIdata.getFifo())
+    #print(RCIdata.sendDataRecord('blank.bmp,,,,',44))
 
     
   

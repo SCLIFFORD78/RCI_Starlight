@@ -3,7 +3,7 @@ import socket
 import binascii
 import time
 
-host = '192.168.1.20'
+host = 'localhost'
 port = 10071
 e = ""
 sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -85,6 +85,7 @@ def connect(host, port):
 def status (): 
     resp = {}
     status = {'0x00':'Unknown', '0x01':'Stopped', '0x02':'Running', '0x03': 'Starting', '0x04':'Stopping','0x05':'Loading Job','0x06':'Paused','0x07':'Error', '0x08':'Waiting'}
+    messageType = {'0x00': 'Warning' , '0x01':'Error', '0x02':'Status'}
     message = b'\x24\x00\x00\x00\x00'
     resMessage = b'\x19\x01\x00\x00\x00\x00'    
     sock.sendall(message,0)
@@ -92,14 +93,28 @@ def status ():
     data = messageRecieved(resMessage)
     byte = []
     for i in range(len(data)):
+        print(data[i])
         byte.append('0x'+ binascii.hexlify(data[i])) 
+
 
     for item in status.keys():
 
         if byte[5] == item:
             print (status[item])
             resp['Status'] = status[item]
-            
+    if len(byte) > 6:
+        for i in range(6,len(byte)):
+            respMessage = [];
+            if i%3 == 0:
+                messageText = '';
+                for item in messageType.keys():
+                    if byte[i] == item:
+                        respMessage.append(messageType[item]);
+                for j in range(i+2,((i+2)+data[i+1])):
+                    messageText = messageText + data[i];
+                respMessage.append(messageText);
+                          
+                          
     return resp
 
 #Start message for printer

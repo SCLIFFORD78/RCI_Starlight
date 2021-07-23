@@ -127,6 +127,7 @@ def connect(host, port):
         
     except socket.error :
         message = False
+        print ("No Connection");
     try:
         sock.connect((host, port))
         test = sock.getsockname()
@@ -135,5 +136,29 @@ def connect(host, port):
         message =  True
     except socket.error:
         message = False
+        print ("Error connecting")
+    return message
+
+def disconnect ():
+    message = ""
+    conn = False
+    try:
+        connection = sock.getsockname()
+        print(connection[0])
+        print( "Connected on " + connection[0])
+        message = "Connected on " + connection[0]
+        conn = True
+    except socket.error :
+        print("No Connection")
+        message ="No Connection"
+        
+    if conn:
+        try:
+            sock.close()
+            #time.sleep(15)
+            #sock.shutdown(socket.SHUT_RDWR)
+            message = "Connection Closed"
+        except socket.error:
+            message = "Error closing Connection"
     return message
 
