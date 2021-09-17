@@ -2,8 +2,11 @@ import sys
 import socket
 import binascii
 import time
+import struct
+import easygui
 
-host = 'localhost'
+
+host = '192.169.1.111'
 port = 10071
 e = ""
 sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -16,7 +19,7 @@ def messageRecieved(message):
     while amount_received < amount_expected:
         data = sock.recv(4096)
         amount_received += len(data)
-        print (sys.stderr, 'received %s' % data)
+        #print (sys.stderr, 'received %s' % data)
     return data
 
 #convert string to hex
@@ -55,6 +58,25 @@ def config ():
         return "configuration OK"
     else:
         return "Configuration error"
+
+# This command is sent to reload the actual loaded job.  
+def jobReload (): 
+    message = b'\x25\x00\x00\x00\x00'
+    jobReloaded = b'\x25\x01\x00\x00\x00\x00'
+    jobNotReloaded = b'\x25\x01\x00\x00\x00\x00'
+    sock.sendall(message,0)
+    
+    amount_received = 0
+    amount_expected = len(message)
+    
+    data = messageRecieved(message)
+    if data == jobReloaded:
+        return True
+    elif data == jobNotReloaded:
+        return False
+    else:
+        return False
+    
 def connect(host, port):
     message = False
     conn = False
@@ -93,29 +115,39 @@ def status ():
     data = messageRecieved(resMessage)
     byte = []
     for i in range(len(data)):
-        print(data[i])
+        #print(data[i])
         byte.append('0x'+ binascii.hexlify(data[i])) 
 
+    if  byte[0] == '0x24':
+        for item in status.keys():
 
-    for item in status.keys():
-
-        if byte[5] == item:
-            print (status[item])
-            resp['Status'] = status[item]
-    if len(byte) > 6:
-        for i in range(6,len(byte)):
+            if byte[5] == item:
+                #print (status[item])
+                resp['Status'] = status[item]
+                resp['Messages'] = []
+        if len(byte) > 6:
+            step = 0
             respMessage = [];
-            if i%3 == 0:
-                messageText = '';
-                for item in messageType.keys():
-                    if byte[i] == item:
-                        respMessage.append(messageType[item]);
-                for j in range(i+2,((i+2)+data[i+1])):
-                    messageText = messageText + data[i];
-                respMessage.append(messageText);
-                          
-                          
-    return resp
+            for i in range(6,len(byte)-3):
+                
+                if i == 6+step and (step+6) < len(byte):
+                    messageText = '';
+                    for item in messageType.keys():
+                        if byte[i] == item:
+                            respMessage.append(messageType[item]);
+                    #print(int(byte[7],16))
+                    for j in range(i+2,((i+2)+int(byte[i+1],16))):
+                        messageText = messageText + data[j];
+                    respMessage.append(messageText);
+                    step = step + int(byte[i+1],16) + 2 
+            resp['Messages'] = respMessage         
+                            
+        #print(resp)                     
+        return resp
+    else:
+        resp['Status'] = 'Unknown'
+        resp['Messages'] = ['Unable to retrieve status, please try again!']
+        return resp
 
 #Start message for printer
 def start (): 
@@ -162,7 +194,8 @@ def stop ():
 #This command is sent on port 1. This command is sent to confirm the number of variable data points expected for a specific job.
 def queryJob (job): 
     hexJob = toHex(job)
-    rtnMessage = b'\x22\x01\x00\x00\x00\x00'
+    returnMessage = b'\x26\x03\x00\x00\x00\x00\x00\x00'
+    rtnMessage = {'jobStatus': '', 'dataPoints':0, 'records':0}
     message = b"\\x00\\x00\\x00"
     jobLength = b''
     if len(hex(len(job)).replace('0x',b'\\x'))==3:
@@ -171,11 +204,21 @@ def queryJob (job):
         jobLength = hex(id).replace('0x','\\x26\\x')
     message2 = jobLength+message+hexJob
     message3 = message2.decode('unicode-escape').encode('ISO-8859-1')
-    
-
     sock.sendall(message3,0)
-    
-    data = messageRecieved(message)
+    data = messageRecieved(returnMessage)
+    byte = []
+    for i in range(len(data)):
+        byte.append('0x'+ binascii.hexlify(data[i])) 
+    if byte[5] == '0x01':
+        rtnMessage['jobStatus']= 'job does not exist'
+        return rtnMessage
+    elif byte[5] == '0x00':
+        rtnMessage['jobStatus'] = 'job exists';rtnMessage['dataPoints']=int(byte[6],16);rtnMessage['records']=int(byte[7],16)
+        return rtnMessage
+    else:
+        rtnMessage['jobStatus'] = 'Error reading'
+        return rtnMessage
+        
         
     
     
@@ -226,7 +269,7 @@ def loadJob (job):
         elif byte == '0x01':
             return job + ' could not be loaded'
         else:
-            return 'error in comminication'
+            return 'error in communication'
     else:
         return "Cant load Job. Machine ", status()
     

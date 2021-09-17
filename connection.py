@@ -21,20 +21,26 @@ while True:
     print (status)
     #print (RCIcommands.disconnect())
     #print(RCIcommands.connect('localhost', 10071))
-    start = RCIcommands.start()
-    print (start)
+    #start = RCIcommands.start()
+    #print (start)
     #print (RCIcommands.status())
     #start = RCIcommands.start()
     #print (start)
     #print (RCIcommands.status())
-    print (RCIcommands.stop())
+    #print (RCIcommands.stop())
     #print (RCIcommands.status())
     print (RCIcommands.getJobs())
     #print (RCIcommands.queryJob('OemSimulatorJob'))
-    print(RCIcommands.loadJob('OemSimulatorJob'))
-    #print(RCIdata.connect('localhost',10072))
-    #print(RCIdata.getFifo())
-    #print(RCIdata.sendDataRecord('blank.bmp,,,,',44))
+    print(RCIcommands.loadJob('TestJob3'))#GIS\\RCI job 1
+    print(RCIcommands.status());
+    print(RCIcommands.status());
+    print(RCIcommands.status());
+    print(RCIcommands.status());
+    #print(RCIcommands.jobReload());
+    print(RCIdata.connect('localhost',10072))
+    print(RCIdata.getFifo())
+    print(RCIdata.sendDataRecord('7Count.BMP,,,Lot:455454,EXP: 26-01-2024',1))
+    print(RCIcommands.queryJob('TestJob3'))
 
     
   

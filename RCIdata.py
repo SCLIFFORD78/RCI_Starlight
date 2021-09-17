@@ -48,9 +48,13 @@ def getFifo ():
     byte = []
     for i in range(len(data)):
         byte.append('0x'+ binascii.hexlify(data[i]))
-
-    fifo = int(byte[5],16)
-    return fifo
+    if byte[0]== '0x60':
+        val = binascii.hexlify(data[len(data)-2])
+        for i in range(len(data)-3,len(data)-int(byte[1],16)-1,-1):
+            val = val + binascii.hexlify(data[i])
+        
+        fifo = int(val,16)
+        return fifo
 
 #This command is sent on port 2. This command is used to send data. 
 # Bitmaps can be printed by downloading them into a defined directory
@@ -61,7 +65,7 @@ def sendDataRecord (dataRecord,id):
     fields = []
     fieldCount = 0
     field = ""
-    dataRecord = '\"' + dataRecord + '\"'
+    #dataRecord = '\"' + dataRecord + '\"'
     for i in range(len(dataRecord)):
         if dataRecord[i] != ",":
             field += dataRecord[i] 
@@ -107,13 +111,18 @@ def sendDataRecord (dataRecord,id):
     for i in range(len(data)):
         byte.append('0x'+ binascii.hexlify(data[i]))
     resp = {'0x00':'Data accepted', '0x01':'Data refused, Buffer overflow','0x02':'Data refused, too little data fore number of fields', '0x03':'Data refused, too big data for number of fields','0x04':'Data accepted, but step and repeat not complete'}
-    if len(byte)==14:
-        for item in resp.keys():
-            if byte[13] == item :
-                
-                return {'id':int(byte[4],16), 'fifo space':int(byte[9],16), 'Response':resp[item]}
-        else:
-            return {'Error':'Error'}
+
+    for item in resp.keys():
+        if byte[len(byte)-1] == item :
+            val = binascii.hexlify(data[len(data)-2])
+            for i in range(len(byte)-3,8,-1):
+                print(i)
+                val = val + binascii.hexlify(data[i])
+        
+            fifo = int(val,16)
+            
+            return {'id':int(byte[5],16), 'fifo space':fifo, 'Response':resp[item]}
+
         
     
  
