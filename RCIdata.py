@@ -11,11 +11,11 @@ sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 def messageRecieved(message):
     amount_received = 0
     amount_expected = len(message)
-    
-    while amount_received < amount_expected:
-        data = sock.recv(4096)
-        amount_received += len(data)
-        print (sys.stderr, 'received %s' % data)
+    data = sock.recv(4096)
+    #while amount_received < amount_expected:
+        #data = sock.recv(4096)
+        #amount_received += len(data)
+        #print (sys.stderr, 'received %s' % data)
     return data
 
 #convert string to hex
@@ -122,8 +122,84 @@ def sendDataRecord (dataRecord,id):
             fifo = int(val,16)
             
             return {'id':int(byte[5],16), 'fifo space':fifo, 'Response':resp[item]}
-
         
+        
+#This command is sent to confirm that a product reached the end of tracking.        
+def sendProductConfirm (productID,productStatus=True): 
+    intProductID = productID
+    if productStatus:
+        result = b'\\x00'
+    else:
+        result = b'\\x01'
+    productID = hex(productID)
+    if len(productID)==3:
+        productID = productID.replace('0x',b'\\x0')
+    else:
+        productID = productID.replace('0x',b'\\x')
+    message = b'\\x63\\x04\\x00\\x00\\x00'+productID+b'\\x00\\x00\\x00'
+    message1 = message.decode('unicode-escape').encode('ISO-8859-1')
+    sock.sendall(message1,0)
+
+
+def sendProductConfirmListen (productID): 
+    num = 1
+    print('num = ', num)
+    print('productID is as follows : ',productID)
+    message = b'\\x63\\x05\\x00\\x00\\x00\\x00\\x00\\x00\\x00\\x00'
+    if productID == 1:
+        data = messageRecieved(message)
+        print(data)
+        byte = []
+        if len(data) > 0:
+            for i in range(len(data)):
+                byte.append('0x'+ binascii.hexlify(data[i]))
+            if byte[0] == '0x63':
+                sendProductConfirm(int(byte[5],16))
+            else:
+                while byte[0] != '0x63':
+                    data = messageRecieved(message)
+                    print(data)
+                    byte = []
+                    if len(data) > 0:
+                        for i in range(len(data)):
+                            byte.append('0x'+ binascii.hexlify(data[i]))
+                        if byte[0] == '0x63':
+                            sendProductConfirm(int(byte[5],16))   
+    else:
+        
+        while num < productID :    
+            for i in range(1,productID+1):
+                data = messageRecieved(message)
+                print(data)
+                byte = []
+                if len(data) > 0:
+                    for j in range(len(data)):
+                        byte.append('0x'+ binascii.hexlify(data[j]))
+                while byte[0] == '0x63' and int(byte[5],16)!=i:
+                    data = messageRecieved(message)
+                    print(data)
+                    byte = []
+                    if len(data) > 0:
+                        for k in range(len(data)):
+                            byte.append('0x'+ binascii.hexlify(data[k]))
+                    #num = int(byte[5],16)
+                    print('this is the num :', num)
+                if int(byte[5],16) == i:
+                    sendProductConfirm(int(byte[5],16))
+                    num = num+1
+                    '''print('num = ',num, ' productID = ', productID)
+                    if num <= productID :
+                        data = messageRecieved(message)
+                        print(data)
+                        byte = []
+                        if len(data) > 0:
+                            for i in range(len(data)):
+                                byte.append('0x'+ binascii.hexlify(data[i]))
+                            sendProductConfirm(int(byte[5],16))
+                        num = num+1'''
+            print('this is the end of the loop ' , int(byte[5],16))
+
+   
     
  
     

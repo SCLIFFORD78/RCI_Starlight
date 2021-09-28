@@ -31,7 +31,7 @@ while True:
     #print (RCIcommands.status())
     print (RCIcommands.getJobs())
     #print (RCIcommands.queryJob('OemSimulatorJob'))
-    print(RCIcommands.loadJob('TestJob3'))#GIS\\RCI job 1
+    print(RCIcommands.loadJob('OemSimulatorJob'))#GIS\\RCI job 1
     print(RCIcommands.status());
     print(RCIcommands.status());
     print(RCIcommands.status());
@@ -39,7 +39,16 @@ while True:
     #print(RCIcommands.jobReload());
     print(RCIdata.connect('localhost',10072))
     print(RCIdata.getFifo())
-    print(RCIdata.sendDataRecord('7Count.BMP,,,Lot:455454,EXP: 26-01-2024',1))
+    print(RCIdata.sendDataRecord('blank.bmp,,, , ',1))
+    print(RCIdata.sendDataRecord('blank.bmp,,, , ',2))
+    print(RCIdata.sendDataRecord('blank.bmp,,, , ',3))
+    print(RCIdata.sendDataRecord('blank.bmp,,, , ',4))
+    print(RCIdata.sendDataRecord('blank.bmp,,, , ',5))
+    print (RCIcommands.start())
+    print(RCIdata.sendProductConfirmListen(5))
+    print(RCIdata.sendDataRecord('blank.bmp,,, , ',3))
+    #print(RCIdata.sendDataRecord('blank.bmp,,, , ',4))
+    print(RCIdata.sendProductConfirmListen(1))
     print(RCIcommands.queryJob('TestJob3'))
 
     

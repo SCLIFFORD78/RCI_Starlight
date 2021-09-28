@@ -3,7 +3,7 @@ import socket
 import binascii
 import time
 import struct
-import easygui
+
 
 
 host = '192.169.1.111'
@@ -15,10 +15,10 @@ sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 def messageRecieved(message):
     amount_received = 0
     amount_expected = len(message)
-    
-    while amount_received < amount_expected:
-        data = sock.recv(4096)
-        amount_received += len(data)
+    data = sock.recv(4096)
+    #while amount_received < amount_expected:
+        #data = sock.recv(4096)
+        #amount_received += len(data)
         #print (sys.stderr, 'received %s' % data)
     return data
 
