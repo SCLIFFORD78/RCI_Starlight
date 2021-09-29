@@ -15,7 +15,7 @@ import RCIdata
 while True:
 
 
-    print(RCIcommands.connect('localhost', 10071))
+    print(RCIcommands.connect('192.168.1.111', 10071))
     print (RCIcommands.host)
     status = RCIcommands.status()
     print (status)
@@ -30,14 +30,14 @@ while True:
     #print (RCIcommands.stop())
     #print (RCIcommands.status())
     print (RCIcommands.getJobs())
-    #print (RCIcommands.queryJob('OemSimulatorJob'))
-    print(RCIcommands.loadJob('OemSimulatorJob'))#GIS\\RCI job 1
+    #print (RCIcommands.queryJob('GIS\\RCI job 1'))
+    print(RCIcommands.loadJob('GIS\\RCI job 1'))#OemSimulatorJob
     print(RCIcommands.status());
     print(RCIcommands.status());
     print(RCIcommands.status());
     print(RCIcommands.status());
     #print(RCIcommands.jobReload());
-    print(RCIdata.connect('localhost',10072))
+    print(RCIdata.connect('192.168.1.111',10072))
     print(RCIdata.getFifo())
     print(RCIdata.sendDataRecord('blank.bmp,,, , ',1))
     print(RCIdata.sendDataRecord('blank.bmp,,, , ',2))
@@ -46,7 +46,7 @@ while True:
     print(RCIdata.sendDataRecord('blank.bmp,,, , ',5))
     print (RCIcommands.start())
     print(RCIdata.sendProductConfirmListen(5))
-    print(RCIdata.sendDataRecord('blank.bmp,,, , ',3))
+    print(RCIdata.sendDataRecord('blank.bmp,,, , ',1))
     #print(RCIdata.sendDataRecord('blank.bmp,,, , ',4))
     print(RCIdata.sendProductConfirmListen(1))
     print(RCIcommands.queryJob('TestJob3'))
