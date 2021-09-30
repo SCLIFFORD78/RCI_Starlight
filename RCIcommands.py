@@ -78,7 +78,7 @@ def jobReload ():
     else:
         return False
     
-def connect(host, port):
+def connect(host, port=10071):
     message = False
     conn = False
     try:
@@ -311,7 +311,9 @@ def clearCommands(commands):
     with open('commands.json', 'w') as outfile:
         json.dump(commands, outfile)
 
-clearCommands()
+with open('commands.json','r') as json_file:
+    commands = json.load(json_file)
+clearCommands(commands)
 
 while True:
     time.sleep(2)
@@ -320,9 +322,6 @@ while True:
         for item in commands["bools"]:
             print(commands["bools"][item])
             if commands["bools"][item] != 0:
-                if item == 'connect':
-                    connect()
-                    clearCommands(commands)
                 if item == 'status':
                     status()
                     clearCommands(commands)
@@ -352,5 +351,8 @@ while True:
                     clearCommands(commands)
                 if item == "queryJob":
                     queryJob(commands["strings"][item])
+                    clearCommands(commands)
+                if item == "connect":
+                    connect(commands["strings"][item])
                     clearCommands(commands)
                 

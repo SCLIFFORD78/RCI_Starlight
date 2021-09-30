@@ -1,6 +1,12 @@
 import sys
 import socket
 import binascii
+import json
+import time
+
+from RCIcommands import loadJob
+
+
 
 host = '192.168.1.20'
 port = 10072
@@ -203,7 +209,7 @@ def sendProductConfirmListen (productID):
     
  
     
-def connect(host, port):
+def connect(host, port=10072):
     message = False
     try:
         connection = sock.getsockname()
@@ -247,3 +253,56 @@ def disconnect ():
             message = "Error closing Connection"
     return message
 
+def clearData(data):
+    for item in data["bools"]:
+        if data["bools"][item] != 0:
+            data["bools"][item] = 0
+    for item in data["values"]:
+        if item == "loadJob" and len(data["values"][item]) != 0:
+            data["values"][item] = ""
+        if item == "connect" and len(data["values"][item]) != 0:
+            data["values"][item] = ""
+        if item == "sendProductConfirm" and data["values"][item] != 0:
+            data["values"][item] = 0
+        if item == "sendProductConfirmListen" and data["values"][item] != 0:
+            data["values"][item] = 0
+        if item == "sendDataRecord" and len(data["values"][item]["dataRecord"]) != 0:
+            data["values"][item]["dataRecord"] = ""
+            data["values"][item]["id"] = 1
+    with open('data.json', 'w') as outfile:
+        json.dump(data, outfile)
+
+while True:
+    
+    time.sleep(2)
+    with open('data.json','r') as json_file:
+        data = json.load(json_file)
+        for item in data["bools"]:
+            print(item)
+            if data["bools"][item] != 0:
+                if item == 'getFifo':
+                    getFifo()
+                    clearData(data)
+                if item == 'disconnect':
+                    clearData(data)
+                    
+                    disconnect()
+                if item == 'quit':
+                    clearData(data)
+                    quit()
+        for item in data["values"]:
+            if item == "loadJob" and len(data["values"][item]) != 0:
+                loadJob(data["values"][item])
+                clearData(data)
+            if item == "connect" and len(data["values"][item]) != 0:
+                connect(data["values"][item])
+                clearData(data)
+            if item == "sendProductConfirm" and data["values"][item] != 0:
+                sendProductConfirm(data["values"][item])
+                clearData(data)
+            if item == "sendProductConfirmListen" and data["values"][item] != 0:
+                sendProductConfirmListen(data["values"][item])
+                clearData(data)
+            if item == "sendDataRecord" and len(data["values"][item]["dataRecord"]) != 0:
+                sendDataRecord(data["values"][item]["dataRecord"],data["values"][item]["id"])
+                clearData(data)
