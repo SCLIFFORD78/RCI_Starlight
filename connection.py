@@ -39,17 +39,21 @@ while True:
     #print(RCIcommands.jobReload());
     print(RCIdata.connect('192.168.1.111',10072))
     print(RCIdata.getFifo())
-    print(RCIdata.sendDataRecord('blank.bmp,,, , ',1))
-    print(RCIdata.sendDataRecord('blank.bmp,,, , ',2))
-    print(RCIdata.sendDataRecord('blank.bmp,,, , ',3))
-    print(RCIdata.sendDataRecord('blank.bmp,,, , ',4))
-    print(RCIdata.sendDataRecord('blank.bmp,,, , ',5))
     print (RCIcommands.start())
-    print(RCIdata.sendProductConfirmListen(5))
-    print(RCIdata.sendDataRecord('blank.bmp,,, , ',1))
+    print(RCIcommands.status());
+    print(RCIcommands.status());
+    print(RCIcommands.status());
+    print(RCIdata.sendDataRecord('2Count.bmp,Lot : DROP 2,Exp: 27-09-2021, , ',1))
+    #print(RCIdata.sendDataRecord('7Count.bmp, , ,Lot : DROP 2,Exp: 27-09-2021',2))
+    #print(RCIdata.sendDataRecord('blank.bmp,,, , ',3))
     #print(RCIdata.sendDataRecord('blank.bmp,,, , ',4))
+    #print(RCIdata.sendDataRecord('blank.bmp,,, , ',5))
     print(RCIdata.sendProductConfirmListen(1))
-    print(RCIcommands.queryJob('TestJob3'))
+    print(RCIcommands.jobReload())
+    print(RCIdata.sendDataRecord('7Count.bmp, , ,Lot : DROP 2,Exp: 27-09-2021',1))
+    #print(RCIdata.sendDataRecord('7Count.bmp, , ,Lot : DROP 2,Exp: 27-09-2021',2))
+    #print(RCIdata.sendProductConfirmListen(1))
+    print(RCIcommands.queryJob('GIS\\RCI job 1'))#TestJob3
 
     
   
