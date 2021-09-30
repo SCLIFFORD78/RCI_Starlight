@@ -3,6 +3,7 @@ import socket
 import binascii
 import time
 import struct
+import json
 
 
 
@@ -299,3 +300,57 @@ def disconnect ():
         except socket.error:
             message = "Error closing Connection"
     return message
+
+def clearCommands(commands):
+    for item in commands["bools"]:
+        if commands["bools"][item] != 0:
+            commands["bools"][item] = 0
+    for item in commands["strings"]:
+        if len(commands["strings"][item]) != 0:
+            commands["strings"][item] = ""
+    with open('commands.json', 'w') as outfile:
+        json.dump(commands, outfile)
+
+clearCommands()
+
+while True:
+    time.sleep(2)
+    with open('commands.json','r') as json_file:
+        commands = json.load(json_file)
+        for item in commands["bools"]:
+            print(commands["bools"][item])
+            if commands["bools"][item] != 0:
+                if item == 'connect':
+                    connect()
+                    clearCommands(commands)
+                if item == 'status':
+                    status()
+                    clearCommands(commands)
+                if item == 'getJobs':
+                    getJobs()
+                    clearCommands(commands)
+                if item == 'start':
+                    start()
+                    clearCommands(commands)
+                if item == 'stop':
+                    stop()
+                    clearCommands(commands)
+                if item == 'jobReload':
+                    jobReload()
+                    clearCommands(commands)
+                if item == 'disconnect':
+                    disconnect()
+                    clearCommands(commands)
+                if item == 'quit':
+                    clearCommands(commands)
+                    quit()
+                
+        for item in commands["strings"]:
+            if len(commands["strings"][item]) != 0:
+                if item == "loadJob":
+                    loadJob(commands["strings"][item])
+                    clearCommands(commands)
+                if item == "queryJob":
+                    queryJob(commands["strings"][item])
+                    clearCommands(commands)
+                

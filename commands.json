@@ -1,0 +1,16 @@
+{
+    "strings": {
+        "loadJob": "",
+        "queryJob": ""
+    },
+    "bools": {
+        "status": 0,
+        "disconnect": 0,
+        "getJobs": 0,
+        "stop": 0,
+        "start": 0,
+        "connect": 0,
+        "jobReload": 0,
+        "quit": 0
+    }
+}
