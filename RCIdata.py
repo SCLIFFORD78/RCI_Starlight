@@ -271,9 +271,12 @@ def clearData(data):
             data["values"][item]["id"] = 1
     with open('data.json', 'w') as outfile:
         json.dump(data, outfile)
+        
+with open('data.json','r') as json_file:
+    data = json.load(json_file)
+clearData(data)
 
 while True:
-    
     time.sleep(2)
     with open('data.json','r') as json_file:
         data = json.load(json_file)
