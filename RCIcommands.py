@@ -292,6 +292,7 @@ def disconnect ():
         
     if conn:
         try:
+            sock.shutdown(2)
             sock.close()
             #time.sleep(15)
             #sock.shutdown(socket.SHUT_RDWR)
